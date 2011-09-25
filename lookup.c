@@ -151,8 +151,6 @@ ubdns_init(void) {
 
 	ctx = ub_ctx_create();
 	if (ctx != NULL) {
-		int ret;
-
 		ret = ubdns_load_resolvconf();
 		if (ret != 0)
 			goto out;
