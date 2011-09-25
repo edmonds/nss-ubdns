@@ -42,6 +42,7 @@
 #include <assert.h>
 #include <inttypes.h>
 
+#define UBDNS_CONF		"/etc/ubdns/ubdns.conf"
 #define UBDNS_RESOLVCONF	"/etc/ubdns/resolv.conf"
 #define UBDNS_KEYDIR		"/etc/ubdns/keys"
 
