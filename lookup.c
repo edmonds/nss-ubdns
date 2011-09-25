@@ -14,8 +14,13 @@
  * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <assert.h>
 #include <ctype.h>
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -29,6 +34,71 @@
 
 static struct ub_ctx *ctx = NULL;
 
+static int
+ubdns_load_keys(void) {
+	DIR *dirp;
+	int dir_fd;
+	struct dirent de;
+	struct dirent *res;
+
+	dirp = opendir(UBDNS_KEYDIR);
+	if (dirp == NULL)
+		return (errno);
+
+	dir_fd = dirfd(dirp);
+	if (dir_fd == -1)
+		return (errno);
+
+	while (readdir_r(dirp, &de, &res) == 0 && res != NULL) {
+		FILE *fp;
+		int fd;
+		char *line = NULL;
+		char *fn;
+		size_t len = 0;
+		size_t fnlen;
+		ssize_t bytes_read;
+
+		fn = de.d_name;
+		fnlen = strlen(fn);
+		if (fnlen < 5 ||
+		     !(fn[fnlen - 4] == '.' &&
+		       fn[fnlen - 3] == 'k' &&
+		       fn[fnlen - 2] == 'e' &&
+		       fn[fnlen - 1] == 'y'))
+		{
+			continue;
+		}
+		if (!isalnum(fn[0]))
+			continue;
+
+		fd = openat(dir_fd, de.d_name, O_RDONLY);
+		if (fd == -1)
+			continue;
+
+		fp = fdopen(fd, "r");
+		if (fp == NULL) {
+			close(fd);
+			continue;
+		}
+
+		while ((bytes_read = getline(&line, &len, fp)) != -1) {
+			char *p = line;
+
+			while (isspace(*p))
+				p++;
+			if (*p == '\0' || *p == ';')
+				continue;
+
+			ub_ctx_add_ta(ctx, p);
+		}
+		free(line);
+		close(fd);
+	}
+	closedir(dirp);
+
+	return (0);
+}
+
 static void __attribute__((constructor))
 ubdns_init(void) {
 	int ret = 0;
@@ -37,11 +107,11 @@ ubdns_init(void) {
 	if (ctx != NULL) {
 		int ret;
 
-		ret = ub_ctx_resolvconf(ctx, "/etc/ubdns/resolv.conf");
+		ret = ub_ctx_resolvconf(ctx, UBDNS_RESOLVCONF);
 		if (ret != 0)
 			goto out;
 
-		ret = ub_ctx_add_ta_file(ctx, "/var/lib/unbound/root.key");
+		ret = ubdns_load_keys();
 		if (ret != 0)
 			goto out;
 	}

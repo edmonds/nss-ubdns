@@ -42,6 +42,9 @@
 #include <assert.h>
 #include <inttypes.h>
 
+#define UBDNS_RESOLVCONF	"/etc/ubdns/resolv.conf"
+#define UBDNS_KEYDIR		"/etc/ubdns/keys"
+
 struct address {
 	unsigned char family;
 	uint8_t address[16];
