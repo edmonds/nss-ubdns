@@ -130,6 +130,21 @@ ubdns_load_cfg(void) {
 	return (0);
 }
 
+static int
+ubdns_load_resolvconf(void) {
+	struct stat sb;
+
+	if (stat(UBDNS_RESOLVCONF, &sb) == 0) {
+		return (ub_ctx_resolvconf(ctx, UBDNS_RESOLVCONF));
+	}
+
+	if (stat(SYSTEM_RESOLVCONF, &sb) == 0) {
+		return (ub_ctx_resolvconf(ctx, SYSTEM_RESOLVCONF));
+	}
+
+	return (-1);
+}
+
 static void __attribute__((constructor))
 ubdns_init(void) {
 	int ret = 0;
@@ -138,7 +153,7 @@ ubdns_init(void) {
 	if (ctx != NULL) {
 		int ret;
 
-		ret = ub_ctx_resolvconf(ctx, UBDNS_RESOLVCONF);
+		ret = ubdns_load_resolvconf();
 		if (ret != 0)
 			goto out;
 
