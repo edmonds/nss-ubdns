@@ -1,0 +1,11 @@
+EXPORTED {
+    global:
+        _nss_ubdns_gethostbyaddr2_r;
+        _nss_ubdns_gethostbyaddr_r;
+        _nss_ubdns_gethostbyname2_r;
+        _nss_ubdns_gethostbyname3_r;
+        _nss_ubdns_gethostbyname4_r;
+        _nss_ubdns_gethostbyname_r;
+    local:
+        *;
+};
