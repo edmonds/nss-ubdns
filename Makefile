@@ -1,17 +1,26 @@
+DESTDIR ?=
+NSSDIR ?= /usr/lib
+
 CC = gcc
 CFLAGS = --std=gnu99 -fPIC -O2 -g -ggdb -Wall
 LDFLAGS = -lunbound
 
-BINS = libnss_ubdns.so.2
+MODULE = libnss_ubdns.so.2
+
+BINS = $(MODULE)
 
 all: $(BINS)
 
-UBDNS_OBJS = arpa.o domain_to_str.o lookup.o ubdns.o
+OBJS = arpa.o domain_to_str.o lookup.o ubdns.o
 
-libnss_ubdns.so.2: $(UBDNS_OBJS)
-	$(CC) -fPIC -shared -Wl,-h,libnss_ubdns.so.2 -Wl,--version-script,nss_ubdns.map -o $@ $(LDFLAGS) $^
+$(MODULE): $(OBJS)
+	$(CC) -fPIC -shared -Wl,-h,$(MODULE) -Wl,--version-script,nss_ubdns.map -o $@ $(LDFLAGS) $^
 
 clean:
-	rm -f $(BINS) $(UBDNS_OBJS)
+	rm -f $(BINS) $(OBJS)
 
-.PHONY: all clean
+install:
+	mkdir -p $(DESTDIR)$(NSSDIR)
+	install -m 0644 $(MODULE) $(DESTDIR)$(NSSDIR)/$(MODULE)
+
+.PHONY: all clean install
