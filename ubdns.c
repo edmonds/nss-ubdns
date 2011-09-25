@@ -157,7 +157,7 @@ enum nss_status _nss_ubdns_gethostbyname4_r(
 	return NSS_STATUS_SUCCESS;
 }
 
-static enum nss_status fill_in_hostent(
+enum nss_status _nss_ubdns_gethostbyname3_r(
 		const char *hn,
 		int af,
 		struct hostent *result,
@@ -172,6 +172,12 @@ static enum nss_status fill_in_hostent(
 	struct address *addresses = NULL, *a;
 	unsigned n_addresses = 0, n, c;
 	unsigned i = 0;
+
+	if (af != AF_INET && af != AF_INET6) {
+		*errnop = EAFNOSUPPORT;
+		*h_errnop = NO_DATA;
+		return (NSS_STATUS_UNAVAIL);
+	}
 
 	alen = PROTO_ADDRESS_SIZE(af);
 
@@ -256,24 +262,6 @@ static enum nss_status fill_in_hostent(
 	free(addresses);
 
 	return NSS_STATUS_SUCCESS;
-}
-
-enum nss_status _nss_ubdns_gethostbyname3_r(
-		const char *name,
-		int af,
-		struct hostent *host,
-		char *buffer, size_t buflen,
-		int *errnop, int *h_errnop,
-		int32_t *ttlp,
-		char **canonp)
-{
-	if (af != AF_INET && af != AF_INET6) {
-		*errnop = EAFNOSUPPORT;
-		*h_errnop = NO_DATA;
-		return NSS_STATUS_UNAVAIL;
-	}
-
-	return fill_in_hostent(name, af, host, buffer, buflen, errnop, h_errnop, ttlp, canonp);
 }
 
 enum nss_status _nss_ubdns_gethostbyname2_r(
