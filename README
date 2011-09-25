@@ -1,0 +1,118 @@
+    nss-ubdns - NSS plugin for DNSSEC validated hostname lookups
+
+The nss-ubdns library is a plugin for the glibc NSS (Name Service Switch)
+interface that returns DNSSEC validated lookups to the NSS "hosts" database.
+It is a replacement for the standard libresolv based "dns" plugin that uses
+the libunbound library for caching and validation.
+
+INSTALLATION
+============
+
+nss-ubdns requires libunbound and the libunbound development headers to build.
+
+Run "make && make install", which will build the plugin and install it to
+/usr/lib. Reset the "NSSDIR" Makefile variable if /usr/lib is not the correct
+path for NSS plugins on your platform.
+
+CONFIGURATION
+=============
+
+nss-ubdns reads the list of nameservers from the file /etc/ubdns/resolv.conf.
+If this file does not exist, the list of nameservers will instead be read from
+/etc/resolv.conf.
+
+The file /etc/ubdns/ubdns.conf contains nss-ubdns specific configuration. The
+currently supported options are:
+
+    accept-bogus
+
+        If "accept-bogus" is set, records which are returned by libunbound as
+        "bogus" are accepted. From the libunbound documentation:
+
+            If the result was not secure, and this result is due to a security
+            failure, bogus is true.  This means the data has been actively
+            tampered with, signatures failed, expected signatures were not
+            present, timestamps on signatures were out of date and so on.
+
+        This option is disabled by default.
+
+    require-secure
+
+        If "require-secure" is set, only results which securely validated will
+        be returned. This option overrides "accept-bogus" if set.
+
+        This option is disabled by default.
+
+Trust anchors are configured by creating files in the /etc/ubdns/keys
+directory. Only files ending in ".key" will be processed. If the unbound
+server is in use, any files that are in use as auto-trust-anchor-files can be
+symlinked into this directory.
+
+To configure the Name Service Switch to use nss-ubdns instead of the glibc dns
+plugin, edit the /etc/nsswitch.conf file and change "dns" to "ubdns" for the
+hosts database (the line beginning with "hosts:").
+
+TESTING
+=======
+
+The "getent hosts", "getent ahostsv4", and "getent ahostsv6" commands can be
+used to test nss-ubdns.
+
+In the following examples, "google.com" is an unsigned zone, "debian.org" is a
+signed and validatable zone, and "dnssec-failed.org" is a signed but
+unvalidatable zone.
+
+This is the default configuration.
+
+    $ cat /etc/ubdns/ubdns.conf
+    cat: /etc/ubdns/ubdns.conf: No such file or directory
+
+    $ getent hosts www.google.com; echo $?
+    74.125.157.147  www.google.com
+    74.125.157.99   www.google.com
+    74.125.157.104  www.google.com
+    0
+
+    $ getent hosts www.debian.org; echo $?
+    2607:f8f0:610:4000:211:25ff:fec4:5b28 www.debian.org
+    0
+
+    $ getent hosts www.dnssec-failed.org; echo $?
+    2
+
+This is the less secure "accept-bogus" configuration:
+
+    # echo accept-bogus > /etc/ubdns/ubdns.conf
+
+    $ getent hosts www.google.com; echo $?
+    74.125.157.147  www.google.com
+    74.125.157.104  www.google.com
+    74.125.157.99   www.google.com
+    0
+
+    $ getent hosts www.debian.org; echo $?
+    2607:f8f0:610:4000:211:25ff:fec4:5b28 www.debian.org
+    0
+
+    $ getent hosts www.dnssec-failed.org; echo $?
+    68.87.64.48     www.dnssec-failed.org
+    0
+
+This is the more secure "require-secure" configuration:
+
+    # echo require-secure > /etc/ubdns/ubdns.conf 
+
+    $ getent hosts www.google.com; echo $?
+    2
+
+    $ getent hosts www.debian.org; echo $?
+    2607:f8f0:610:4000:211:25ff:fec4:5b28 www.debian.org
+    0
+
+    $ getent hosts www.dnssec-failed.org; echo $?
+    2
+
+TODO
+====
+
+Aliases are not handled correctly.
