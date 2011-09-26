@@ -43,6 +43,13 @@ currently supported options are:
 
         This option is disabled by default.
 
+    logging
+
+        If "logging" is set, resolutions will be logged to syslog containing
+        the DNS name, DNS rrtype, resolution latency, and secure/bogus flags.
+
+        This option is disabled by default.
+
 Trust anchors are configured by creating files in the /etc/ubdns/keys
 directory. Only files ending in ".key" will be processed. If the unbound
 server is in use, any files that are in use as auto-trust-anchor-files can be
@@ -51,6 +58,10 @@ symlinked into this directory.
 To configure the Name Service Switch to use nss-ubdns instead of the glibc dns
 plugin, edit the /etc/nsswitch.conf file and change "dns" to "ubdns" for the
 hosts database (the line beginning with "hosts:").
+
+Note that installing nss-ubdns will cause your host to generate additional DNS
+queries. You may want to install a local DNS cache to reduce the upstream
+impact of this additional load.
 
 TESTING
 =======
