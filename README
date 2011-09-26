@@ -123,6 +123,32 @@ This is the more secure "require-secure" configuration:
     $ getent hosts www.dnssec-failed.org; echo $?
     2
 
+When the "logging" option is enabled, resolutions will be logged to syslog.
+The following is an example of the syslog output generated when the Chrome
+browser is started with nss-ubdns configured:
+
+    Sep 25 21:00:32 chase nss-ubdns[13349]: name= www.google.com latency= 0.004 secure= 0 bogus= 0 type= A
+    Sep 25 21:00:32 chase nss-ubdns[13349]: name= www.google.com latency= 0.001 secure= 0 bogus= 0 type= AAAA
+    Sep 25 21:00:32 chase nss-ubdns[13349]: name= ocsp.thawte.com latency= 0.037 secure= 0 bogus= 0 type= A
+    Sep 25 21:00:32 chase nss-ubdns[13349]: name= ocsp.thawte.com latency= 0.058 secure= 0 bogus= 0 type= AAAA
+    Sep 25 21:00:32 chase nss-ubdns[13349]: name= ocsp.thawte.com latency= 0.001 secure= 0 bogus= 0 type= A
+    Sep 25 21:00:32 chase nss-ubdns[13349]: name= ocsp.thawte.com latency= 0.001 secure= 0 bogus= 0 type= AAAA
+    Sep 25 21:00:37 chase nss-ubdns[13349]: name= www.google.com latency= 0.001 secure= 0 bogus= 0 type= A
+    Sep 25 21:00:37 chase nss-ubdns[13349]: name= www.google.com latency= 0.001 secure= 0 bogus= 0 type= AAAA
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= eweqkizfzv latency= 0.014 secure= 1 bogus= 0 type= A
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= crplfhttua latency= 0.041 secure= 1 bogus= 0 type= A
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= crplfhttua latency= 0.033 secure= 1 bogus= 0 type= AAAA
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= crplfhttua latency= 0.001 secure= 1 bogus= 0 type= A
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= crplfhttua latency= 0.001 secure= 1 bogus= 0 type= AAAA
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= eweqkizfzv latency= 0.064 secure= 1 bogus= 0 type= AAAA
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= eweqkizfzv latency= 0.001 secure= 1 bogus= 0 type= A
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= eweqkizfzv latency= 0.001 secure= 1 bogus= 0 type= AAAA
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= kyeymnhpgv latency= 0.109 secure= 1 bogus= 0 type= A
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= kyeymnhpgv latency= 0.066 secure= 1 bogus= 0 type= AAAA
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= kyeymnhpgv latency= 0.001 secure= 1 bogus= 0 type= A
+    Sep 25 21:00:39 chase nss-ubdns[13349]: name= kyeymnhpgv latency= 0.001 secure= 1 bogus= 0 type= AAAA
+
+
 BUGS
 ====
 
