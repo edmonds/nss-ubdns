@@ -237,7 +237,7 @@ ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_
 		goto err;
 
 	if (af == AF_INET || af == AF_UNSPEC) {
-		ret = ub_resolve(ctx, (char *) hn, 1 /*A*/, 1 /*IN*/, &res);
+		ret = ub_resolve(ctx, (char *) hn, UBDNS_TYPE_A, 1 /*IN*/, &res);
 		if (ret != 0)
 			goto err;
 
@@ -249,7 +249,7 @@ ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_
 	}
 
 	if (af == AF_INET6 || af == AF_UNSPEC) {
-		ret = ub_resolve(ctx, (char *) hn, 28 /*A*/, 1 /*IN*/, &res);
+		ret = ub_resolve(ctx, (char *) hn, UBDNS_TYPE_AAAA, 1 /*IN*/, &res);
 		if (ret != 0)
 			goto err;
 
@@ -293,7 +293,7 @@ ubdns_lookup_reverse(const void *addr, int af) {
 		return (NULL);
 	}
 
-	ret = ub_resolve(ctx, qname, 12 /*PTR*/, 1 /*IN*/, &res);
+	ret = ub_resolve(ctx, qname, UBDNS_TYPE_PTR, 1 /*IN*/, &res);
 
 	if (ret == 0 &&
 	    ubdns_check_result(res) &&
