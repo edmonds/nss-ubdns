@@ -112,7 +112,7 @@ This is the more secure "require-secure" configuration:
     $ getent hosts www.dnssec-failed.org; echo $?
     2
 
-TODO
+BUGS
 ====
 
-Aliases are not handled correctly.
+    * Aliases are not handled correctly.
