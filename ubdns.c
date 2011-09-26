@@ -289,7 +289,7 @@ enum nss_status _nss_ubdns_gethostbyname_r(
 {
 	return _nss_ubdns_gethostbyname3_r(
 			name,
-			AF_UNSPEC,
+			AF_INET,
 			host,
 			buffer, buflen,
 			errnop, h_errnop,
