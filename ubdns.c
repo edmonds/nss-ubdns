@@ -137,7 +137,7 @@ enum nss_status _nss_ubdns_gethostbyname4_r(
 		r_tuple->next = r_tuple_prev;
 		r_tuple->name = r_name;
 		r_tuple->family = a->family;
-		r_tuple->scopeid = a->ifindex;
+		r_tuple->scopeid = 0;
 		memcpy(r_tuple->addr, a->address, 16);
 
 		idx += ALIGN(sizeof(struct gaih_addrtuple));
