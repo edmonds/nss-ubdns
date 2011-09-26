@@ -299,7 +299,7 @@ ubdns_lookup_reverse(const void *addr, int af) {
 	    ubdns_check_result(res) &&
 	    res->data[0] != NULL)
 	{
-		char name[1025];
+		char name[UBDNS_PRESLEN_NAME];
 		domain_to_str((const uint8_t *) res->data[0], res->len[0], name);
 		return (strdup(name));
 	}

@@ -47,6 +47,7 @@
 #define UBDNS_RESOLVCONF	"/etc/ubdns/resolv.conf"
 #define SYSTEM_RESOLVCONF	"/etc/resolv.conf"
 
+#define UBDNS_PRESLEN_NAME	1025
 #define UBDNS_TYPE_A		1
 #define UBDNS_TYPE_PTR		12
 #define UBDNS_TYPE_AAAA		28
