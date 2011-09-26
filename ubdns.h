@@ -56,7 +56,6 @@ struct address {
 	unsigned char family;
 	uint8_t address[16];
 	unsigned char scope;
-	int ifindex;
 };
 
 void arpa_qname_ip4(const void *addr, char **res);
@@ -83,11 +82,6 @@ static inline int address_compare(const void *_a, const void *_b) {
 	if (a->family == AF_INET && b->family == AF_INET6)
 		return -1;
 	if (a->family == AF_INET6 && b->family == AF_INET)
-		return 1;
-
-	if (a->ifindex < b->ifindex)
-		return -1;
-	if (a->ifindex > b->ifindex)
 		return 1;
 
 	return 0;
