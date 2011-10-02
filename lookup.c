@@ -128,6 +128,10 @@ ubdns_init(void) {
 
 	ctx = ub_ctx_create();
 	if (ctx != NULL) {
+		/* disable logging to stderr */
+		/* the stub resolver must not generate any output to stdio */
+		ub_ctx_debugout(ctx, NULL);
+
 		ret = ubdns_load_resolvconf();
 		if (ret != 0)
 			goto out;
