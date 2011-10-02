@@ -27,22 +27,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#include <syslog.h>
 #include <unistd.h>
 
 #include <unbound.h>
 
 #include "ubdns.h"
 
-#define ubdns_log(format, ...) do { \
-	if (ubdns_cfg.logging) syslog(LOG_DAEMON | LOG_DEBUG, format, ## __VA_ARGS__); \
-} while (0)
-
 static struct ub_ctx *ctx = NULL;
 static struct {
 	bool accept_bogus;
 	bool require_secure;
-	bool logging;
 } ubdns_cfg;
 
 static int
@@ -126,9 +120,6 @@ ubdns_load_cfg(void) {
 			ubdns_cfg.require_secure = true;
 		} else if (strcasecmp("accept-bogus\n", line) == 0) {
 			ubdns_cfg.accept_bogus = true;
-		} else if (strcasecmp("logging\n", line) == 0) {
-			ubdns_cfg.logging = true;
-			openlog("nss-ubdns", LOG_PID, LOG_DAEMON);
 		}
 	}
 	fclose(fp);
@@ -239,7 +230,6 @@ ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_
 	unsigned n_list = 0;
 	int r = 1;
 	int ret;
-	struct timespec a, b;
 
 	struct ub_result *res;
 
@@ -247,16 +237,9 @@ ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_
 		goto err;
 
 	if (af == AF_INET || af == AF_UNSPEC) {
-		timespec_get(&a);
 		ret = ub_resolve(ctx, (char *) hn, UBDNS_TYPE_A, 1 /*IN*/, &res);
 		if (ret != 0)
 			goto err;
-		timespec_get(&b);
-		if (ubdns_cfg.logging) {
-			timespec_sub(&a, &b);
-			ubdns_log("name= %s latency= %.3f secure= %d bogus= %d type= A",
-				  hn, timespec_to_double(&b), res->secure, res->bogus);
-		}
 
 		ret = ubdns_add_result(&list, &n_list, res, AF_INET);
 		if (ret != 0)
@@ -266,16 +249,9 @@ ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_
 	}
 
 	if (af == AF_INET6 || af == AF_UNSPEC) {
-		timespec_get(&a);
 		ret = ub_resolve(ctx, (char *) hn, UBDNS_TYPE_AAAA, 1 /*IN*/, &res);
 		if (ret != 0)
 			goto err;
-		timespec_get(&b);
-		if (ubdns_cfg.logging) {
-			timespec_sub(&a, &b);
-			ubdns_log("name= %s latency= %.3f secure= %d bogus= %d type= AAAA",
-				  hn, timespec_to_double(&b), res->secure, res->bogus);
-		}
 
 		ret = ubdns_add_result(&list, &n_list, res, AF_INET6);
 		if (ret != 0)
@@ -305,7 +281,6 @@ ubdns_lookup_reverse(const void *addr, int af) {
 	struct ub_result *res;
 	char *qname = NULL;
 	int ret;
-	struct timespec a, b;
 
 	if (ctx == NULL)
 		return (NULL);
@@ -318,14 +293,7 @@ ubdns_lookup_reverse(const void *addr, int af) {
 		return (NULL);
 	}
 
-	timespec_get(&a);
 	ret = ub_resolve(ctx, qname, UBDNS_TYPE_PTR, 1 /*IN*/, &res);
-	timespec_get(&b);
-	if (ubdns_cfg.logging) {
-		timespec_sub(&a, &b);
-		ubdns_log("name= %s latency= %.3f secure= %d bogus= %d type= PTR",
-			  qname, timespec_to_double(&b), res->secure, res->bogus);
-	}
 
 	if (ret == 0 &&
 	    ubdns_check_result(res) &&
