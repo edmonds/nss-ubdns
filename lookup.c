@@ -251,7 +251,7 @@ err:
 
 char *
 ubdns_lookup_reverse(const void *addr, int af) {
-	struct ub_result *res;
+	struct ub_result *res = NULL;
 	char *qname = NULL;
 	int ret;
 
@@ -274,8 +274,12 @@ ubdns_lookup_reverse(const void *addr, int af) {
 	{
 		char name[UBDNS_PRESLEN_NAME];
 		domain_to_str((const uint8_t *) res->data[0], res->len[0], name);
+		ub_resolve_free(res);
 		return (strdup(name));
 	}
+
+	if (res != NULL)
+		ub_resolve_free(res);
 
 	return (NULL);
 }
