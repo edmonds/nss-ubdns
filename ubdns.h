@@ -65,10 +65,6 @@ void arpa_qname_ip6(const void *addr, char **res);
 
 size_t domain_to_str(const uint8_t *src, size_t src_len, char *dst);
 
-void timespec_get(struct timespec *ts);
-void timespec_sub(const struct timespec *a, struct timespec *b);
-double timespec_to_double(const struct timespec *ts);
-
 int ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_n_list);
 char *ubdns_lookup_reverse(const void *addr, int af);
 
