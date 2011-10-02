@@ -21,6 +21,11 @@ nss-ubdns reads the list of nameservers from the file /etc/ubdns/resolv.conf.
 If this file does not exist, the list of nameservers will instead be read from
 /etc/resolv.conf.
 
+The file /etc/ubdns/libunbound.conf, if it exists, will be used to configure
+the libunbound library. See the unbound.conf(5) man page for more details. A
+sample libunbound.conf file that minimizes the resources consumed by the
+resolver is included with nss-ubdns.
+
 The file /etc/ubdns/ubdns.conf contains nss-ubdns specific configuration. The
 currently supported options are:
 
@@ -66,11 +71,6 @@ In the following examples, "google.com" is an unsigned zone, "debian.org" is a
 signed and validatable zone, and "dnssec-failed.org" is a signed but
 unvalidatable zone.
 
-This is the default configuration.
-
-    $ cat /etc/ubdns/ubdns.conf
-    cat: /etc/ubdns/ubdns.conf: No such file or directory
-
     $ getent hosts www.google.com; echo $?
     74.125.157.147  www.google.com
     74.125.157.99   www.google.com
@@ -83,40 +83,6 @@ This is the default configuration.
 
     $ getent hosts www.dnssec-failed.org; echo $?
     2
-
-This is the less secure "accept-bogus" configuration:
-
-    # echo accept-bogus > /etc/ubdns/ubdns.conf
-
-    $ getent hosts www.google.com; echo $?
-    74.125.157.147  www.google.com
-    74.125.157.104  www.google.com
-    74.125.157.99   www.google.com
-    0
-
-    $ getent hosts www.debian.org; echo $?
-    2607:f8f0:610:4000:211:25ff:fec4:5b28 www.debian.org
-    0
-
-    $ getent hosts www.dnssec-failed.org; echo $?
-    68.87.64.48     www.dnssec-failed.org
-    0
-
-This is the more secure "require-secure" configuration:
-
-    # echo require-secure > /etc/ubdns/ubdns.conf 
-
-    $ getent hosts www.google.com; echo $?
-    2
-
-    $ getent hosts www.debian.org; echo $?
-    2607:f8f0:610:4000:211:25ff:fec4:5b28 www.debian.org
-    0
-
-    $ getent hosts www.dnssec-failed.org; echo $?
-    2
-
-
 
 BUGS
 ====
