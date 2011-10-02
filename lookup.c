@@ -34,10 +34,6 @@
 #include "ubdns.h"
 
 static struct ub_ctx *ctx = NULL;
-static struct {
-	bool accept_bogus;
-	bool require_secure;
-} ubdns_cfg;
 
 static int
 ubdns_load_keys(void) {
@@ -106,26 +102,7 @@ ubdns_load_keys(void) {
 
 static int
 ubdns_load_cfg(void) {
-	FILE *fp;
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t bytes_read;
-
-	fp = fopen(UBDNS_CONF, "r");
-	if (fp == NULL)
-		return (0);
-
-	while ((bytes_read = getline(&line, &len, fp)) != -1) {
-		if (strcasecmp("require-secure\n", line) == 0) {
-			ubdns_cfg.require_secure = true;
-		} else if (strcasecmp("accept-bogus\n", line) == 0) {
-			ubdns_cfg.accept_bogus = true;
-		}
-	}
-	fclose(fp);
-
-	if (ubdns_cfg.require_secure)
-		ubdns_cfg.accept_bogus = false;
+	ub_ctx_config(ctx, UBDNS_LUCONF);
 
 	return (0);
 }
@@ -183,16 +160,8 @@ ubdns_check_result(struct ub_result *res) {
 	if (res->havedata == 0)
 		return (false);
 
-	if (!res->secure) {
-		if (ubdns_cfg.require_secure)
-			return (false);
-	}
-
-	if (res->bogus) {
-		if (ubdns_cfg.accept_bogus)
-			return (true);
+	if (res->bogus)
 		return (false);
-	}
 
 	return (true);
 }

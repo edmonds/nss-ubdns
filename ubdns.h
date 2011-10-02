@@ -44,7 +44,7 @@
 #include <inttypes.h>
 #include <time.h>
 
-#define UBDNS_CONF		"/etc/ubdns/ubdns.conf"
+#define UBDNS_LUCONF		"/etc/ubdns/libunbound.conf"
 #define UBDNS_KEYDIR		"/etc/ubdns/keys"
 #define UBDNS_RESOLVCONF	"/etc/ubdns/resolv.conf"
 #define SYSTEM_RESOLVCONF	"/etc/resolv.conf"
