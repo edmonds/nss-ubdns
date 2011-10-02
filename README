@@ -26,28 +26,6 @@ the libunbound library. See the unbound.conf(5) man page for more details. A
 sample libunbound.conf file that minimizes the resources consumed by the
 resolver is included with nss-ubdns.
 
-The file /etc/ubdns/ubdns.conf contains nss-ubdns specific configuration. The
-currently supported options are:
-
-    accept-bogus
-
-        If "accept-bogus" is set, records which are returned by libunbound as
-        "bogus" are accepted. From the libunbound documentation:
-
-            If the result was not secure, and this result is due to a security
-            failure, bogus is true.  This means the data has been actively
-            tampered with, signatures failed, expected signatures were not
-            present, timestamps on signatures were out of date and so on.
-
-        This option is disabled by default.
-
-    require-secure
-
-        If "require-secure" is set, only results which securely validated will
-        be returned. This option overrides "accept-bogus" if set.
-
-        This option is disabled by default.
-
 Trust anchors are configured by creating files in the /etc/ubdns/keys
 directory. Only files ending in ".key" will be processed. If the unbound
 server is in use, any files that are in use as auto-trust-anchor-files can be
