@@ -98,11 +98,9 @@ nss_ubdns_load_keys(void) {
 	closedir(dirp);
 }
 
-static int
+static void
 nss_ubdns_load_cfg(void) {
 	ub_ctx_config(ctx, NSS_UBDNS_LUCONF);
-
-	return (0);
 }
 
 static void
@@ -118,8 +116,6 @@ nss_ubdns_load_resolvconf(void) {
 
 static void __attribute__((constructor))
 nss_ubdns_init(void) {
-	int ret = 0;
-
 	ctx = ub_ctx_create();
 	if (ctx != NULL) {
 		/* disable logging to stderr */
@@ -128,17 +124,7 @@ nss_ubdns_init(void) {
 
 		nss_ubdns_load_resolvconf();
 		nss_ubdns_load_keys();
-
-		ret = nss_ubdns_load_cfg();
-		if (ret != 0)
-			goto out;
-	}
-
-out:
-	if (ret != 0) {
-		if (ctx != NULL)
-			ub_ctx_delete(ctx);
-		ctx = NULL;
+		nss_ubdns_load_cfg();
 	}
 }
 
