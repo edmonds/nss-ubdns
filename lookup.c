@@ -35,7 +35,7 @@
 
 static struct ub_ctx *ctx = NULL;
 
-static int
+static void
 nss_ubdns_load_keys(void) {
 	DIR *dirp;
 	int dir_fd;
@@ -44,11 +44,11 @@ nss_ubdns_load_keys(void) {
 
 	dirp = opendir(NSS_UBDNS_KEYDIR);
 	if (dirp == NULL)
-		return (errno);
+		return;
 
 	dir_fd = dirfd(dirp);
 	if (dir_fd == -1)
-		return (errno);
+		return;
 
 	while (readdir_r(dirp, &de, &res) == 0 && res != NULL) {
 		FILE *fp;
@@ -96,8 +96,6 @@ nss_ubdns_load_keys(void) {
 		close(fd);
 	}
 	closedir(dirp);
-
-	return (0);
 }
 
 static int
@@ -129,10 +127,7 @@ nss_ubdns_init(void) {
 		ub_ctx_debugout(ctx, NULL);
 
 		nss_ubdns_load_resolvconf();
-
-		ret = nss_ubdns_load_keys();
-		if (ret != 0)
-			goto out;
+		nss_ubdns_load_keys();
 
 		ret = nss_ubdns_load_cfg();
 		if (ret != 0)
