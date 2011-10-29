@@ -17,9 +17,9 @@ path for NSS plugins on your platform.
 CONFIGURATION
 =============
 
-nss-ubdns reads the list of nameservers from the file
-/etc/nss-ubdns/resolv.conf.  If this file does not exist, the list of
-nameservers will instead be read from /etc/resolv.conf.
+nss-ubdns reads the list of nameservers from the standard resolver
+configuration file, /etc/resolv.conf. Only "nameserver" lines are used, any
+other settings are ignored.
 
 The file /etc/nss-ubdns/libunbound.conf, if it exists, will be used to
 configure the libunbound library. See the unbound.conf(5) man page for more

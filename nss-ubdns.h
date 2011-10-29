@@ -46,8 +46,7 @@
 
 #define NSS_UBDNS_LUCONF	"/etc/nss-ubdns/libunbound.conf"
 #define NSS_UBDNS_KEYDIR	"/etc/nss-ubdns/keys"
-#define NSS_UBDNS_RESOLVCONF	"/etc/nss-ubdns/resolv.conf"
-#define SYSTEM_RESOLVCONF	"/etc/resolv.conf"
+#define NSS_UBDNS_RESOLVCONF	"/etc/resolv.conf"
 
 #define NSS_UBDNS_PRESLEN_NAME	1025
 #define NSS_UBDNS_TYPE_A	1

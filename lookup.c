@@ -115,10 +115,6 @@ nss_ubdns_load_resolvconf(void) {
 		return (ub_ctx_resolvconf(ctx, NSS_UBDNS_RESOLVCONF));
 	}
 
-	if (stat(SYSTEM_RESOLVCONF, &sb) == 0) {
-		return (ub_ctx_resolvconf(ctx, SYSTEM_RESOLVCONF));
-	}
-
 	return (-1);
 }
 
