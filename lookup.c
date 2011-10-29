@@ -107,15 +107,15 @@ nss_ubdns_load_cfg(void) {
 	return (0);
 }
 
-static int
+static void
 nss_ubdns_load_resolvconf(void) {
 	struct stat sb;
 
 	if (stat(NSS_UBDNS_RESOLVCONF, &sb) == 0) {
-		return (ub_ctx_resolvconf(ctx, NSS_UBDNS_RESOLVCONF));
+		ub_ctx_resolvconf(ctx, NSS_UBDNS_RESOLVCONF);
+	} else {
+		ub_ctx_set_fwd(ctx, "127.0.0.1");
 	}
-
-	return (-1);
 }
 
 static void __attribute__((constructor))
@@ -128,9 +128,7 @@ nss_ubdns_init(void) {
 		/* the stub resolver must not generate any output to stdio */
 		ub_ctx_debugout(ctx, NULL);
 
-		ret = nss_ubdns_load_resolvconf();
-		if (ret != 0)
-			goto out;
+		nss_ubdns_load_resolvconf();
 
 		ret = nss_ubdns_load_keys();
 		if (ret != 0)
