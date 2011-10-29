@@ -65,4 +65,30 @@ unvalidatable zone.
 BUGS
 ====
 
-    * Aliases are not handled correctly.
+* Aliases are not handled correctly.
+
+nss-ubdns returns something like this when the qname is an alias:
+
+    $ getent hosts www.google.com
+    74.125.45.147   www.google.com
+    74.125.45.104   www.google.com
+    74.125.45.99    www.google.com
+    74.125.45.105   www.google.com
+    74.125.45.106   www.google.com
+    74.125.45.103   www.google.com
+
+while nss-dns returns something like this:
+
+    $ getent hosts www.google.com
+    74.125.45.147   www.l.google.com www.google.com
+    74.125.45.104   www.l.google.com www.google.com
+    74.125.45.99    www.l.google.com www.google.com
+    74.125.45.105   www.l.google.com www.google.com
+    74.125.45.106   www.l.google.com www.google.com
+    74.125.45.103   www.l.google.com www.google.com
+
+* Long-running processes will not pick up changes to /etc/nss-ubdns and
+/etc/resolv.conf. (Though unpatched glibc has the same problem, see
+http://www.eglibc.org/archives/patches/msg00772.html.) This is a limitation of
+the libunbound resolver API, which cannot be reconfigured after the first
+resolution has been performed.
