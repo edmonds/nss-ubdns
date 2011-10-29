@@ -11,7 +11,7 @@ BINS = $(MODULE)
 
 all: $(BINS)
 
-OBJS = arpa.o domain_to_str.o lookup.o ubdns.o
+OBJS = arpa.o domain_to_str.o lookup.o nss-ubdns.o
 
 $(MODULE): $(OBJS)
 	$(CC) -fPIC -shared -Wl,-h,$(MODULE) -Wl,--version-script,nss_ubdns.map -o $@ $(LDFLAGS) $^

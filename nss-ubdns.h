@@ -34,8 +34,8 @@
   <http://www.gnu.org/licenses/>.
 ***/
 
-#ifndef UBDNS_H
-#define UBDNS_H
+#ifndef NSS_UBDNS_H
+#define NSS_UBDNS_H
 
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -44,15 +44,15 @@
 #include <inttypes.h>
 #include <time.h>
 
-#define UBDNS_LUCONF		"/etc/ubdns/libunbound.conf"
-#define UBDNS_KEYDIR		"/etc/ubdns/keys"
-#define UBDNS_RESOLVCONF	"/etc/ubdns/resolv.conf"
+#define NSS_UBDNS_LUCONF	"/etc/nss-ubdns/libunbound.conf"
+#define NSS_UBDNS_KEYDIR	"/etc/nss-ubdns/keys"
+#define NSS_UBDNS_RESOLVCONF	"/etc/nss-ubdns/resolv.conf"
 #define SYSTEM_RESOLVCONF	"/etc/resolv.conf"
 
-#define UBDNS_PRESLEN_NAME	1025
-#define UBDNS_TYPE_A		1
-#define UBDNS_TYPE_PTR		12
-#define UBDNS_TYPE_AAAA		28
+#define NSS_UBDNS_PRESLEN_NAME	1025
+#define NSS_UBDNS_TYPE_A	1
+#define NSS_UBDNS_TYPE_PTR	12
+#define NSS_UBDNS_TYPE_AAAA	28
 
 struct address {
 	unsigned char family;
@@ -65,8 +65,8 @@ void arpa_qname_ip6(const void *addr, char **res);
 
 size_t domain_to_str(const uint8_t *src, size_t src_len, char *dst);
 
-int ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_n_list);
-char *ubdns_lookup_reverse(const void *addr, int af);
+int nss_ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_n_list);
+char *nss_ubdns_lookup_reverse(const void *addr, int af);
 
 static inline size_t PROTO_ADDRESS_SIZE(int proto) {
 	assert(proto == AF_INET || proto == AF_INET6);
@@ -91,4 +91,4 @@ static inline int address_compare(const void *_a, const void *_b) {
 	return 0;
 }
 
-#endif /* UBDNS_H */
+#endif /* NSS_UBDNS_H */

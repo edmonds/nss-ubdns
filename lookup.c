@@ -31,18 +31,18 @@
 
 #include <unbound.h>
 
-#include "ubdns.h"
+#include "nss-ubdns.h"
 
 static struct ub_ctx *ctx = NULL;
 
 static int
-ubdns_load_keys(void) {
+nss_ubdns_load_keys(void) {
 	DIR *dirp;
 	int dir_fd;
 	struct dirent de;
 	struct dirent *res;
 
-	dirp = opendir(UBDNS_KEYDIR);
+	dirp = opendir(NSS_UBDNS_KEYDIR);
 	if (dirp == NULL)
 		return (errno);
 
@@ -101,18 +101,18 @@ ubdns_load_keys(void) {
 }
 
 static int
-ubdns_load_cfg(void) {
-	ub_ctx_config(ctx, UBDNS_LUCONF);
+nss_ubdns_load_cfg(void) {
+	ub_ctx_config(ctx, NSS_UBDNS_LUCONF);
 
 	return (0);
 }
 
 static int
-ubdns_load_resolvconf(void) {
+nss_ubdns_load_resolvconf(void) {
 	struct stat sb;
 
-	if (stat(UBDNS_RESOLVCONF, &sb) == 0) {
-		return (ub_ctx_resolvconf(ctx, UBDNS_RESOLVCONF));
+	if (stat(NSS_UBDNS_RESOLVCONF, &sb) == 0) {
+		return (ub_ctx_resolvconf(ctx, NSS_UBDNS_RESOLVCONF));
 	}
 
 	if (stat(SYSTEM_RESOLVCONF, &sb) == 0) {
@@ -123,7 +123,7 @@ ubdns_load_resolvconf(void) {
 }
 
 static void __attribute__((constructor))
-ubdns_init(void) {
+nss_ubdns_init(void) {
 	int ret = 0;
 
 	ctx = ub_ctx_create();
@@ -132,15 +132,15 @@ ubdns_init(void) {
 		/* the stub resolver must not generate any output to stdio */
 		ub_ctx_debugout(ctx, NULL);
 
-		ret = ubdns_load_resolvconf();
+		ret = nss_ubdns_load_resolvconf();
 		if (ret != 0)
 			goto out;
 
-		ret = ubdns_load_keys();
+		ret = nss_ubdns_load_keys();
 		if (ret != 0)
 			goto out;
 
-		ret = ubdns_load_cfg();
+		ret = nss_ubdns_load_cfg();
 		if (ret != 0)
 			goto out;
 	}
@@ -154,13 +154,13 @@ out:
 }
 
 static void __attribute__((destructor))
-ubdns_finish(void) {
+nss_ubdns_finish(void) {
 	ub_ctx_delete(ctx);
 	ctx = NULL;
 }
 
 static bool
-ubdns_check_result(struct ub_result *res) {
+nss_ubdns_check_result(struct ub_result *res) {
 	if (res->havedata == 0)
 		return (false);
 
@@ -171,12 +171,12 @@ ubdns_check_result(struct ub_result *res) {
 }
 
 static int
-ubdns_add_result(struct address **_list, unsigned *_n_list, struct ub_result *res, int af) {
+nss_ubdns_add_result(struct address **_list, unsigned *_n_list, struct ub_result *res, int af) {
 	struct address *list = *_list;
 	unsigned n_list = *_n_list;
 	int i;
 
-	if (!ubdns_check_result(res))
+	if (!nss_ubdns_check_result(res))
 		return (0);
 
 	for (i = 0; res->data[i] != NULL; i++) {
@@ -198,7 +198,7 @@ ubdns_add_result(struct address **_list, unsigned *_n_list, struct ub_result *re
 }
 
 int
-ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_n_list) {
+nss_ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_n_list) {
 	struct address *list = NULL;
 	unsigned n_list = 0;
 	int r = 1;
@@ -210,11 +210,11 @@ ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_
 		goto err;
 
 	if (af == AF_INET || af == AF_UNSPEC) {
-		ret = ub_resolve(ctx, (char *) hn, UBDNS_TYPE_A, 1 /*IN*/, &res);
+		ret = ub_resolve(ctx, (char *) hn, NSS_UBDNS_TYPE_A, 1 /*IN*/, &res);
 		if (ret != 0)
 			goto err;
 
-		ret = ubdns_add_result(&list, &n_list, res, AF_INET);
+		ret = nss_ubdns_add_result(&list, &n_list, res, AF_INET);
 		if (ret != 0)
 			goto err;
 
@@ -222,11 +222,11 @@ ubdns_lookup_forward(const char *hn, int af, struct address **_list, unsigned *_
 	}
 
 	if (af == AF_INET6 || af == AF_UNSPEC) {
-		ret = ub_resolve(ctx, (char *) hn, UBDNS_TYPE_AAAA, 1 /*IN*/, &res);
+		ret = ub_resolve(ctx, (char *) hn, NSS_UBDNS_TYPE_AAAA, 1 /*IN*/, &res);
 		if (ret != 0)
 			goto err;
 
-		ret = ubdns_add_result(&list, &n_list, res, AF_INET6);
+		ret = nss_ubdns_add_result(&list, &n_list, res, AF_INET6);
 		if (ret != 0)
 			goto err;
 
@@ -250,7 +250,7 @@ err:
 }
 
 char *
-ubdns_lookup_reverse(const void *addr, int af) {
+nss_ubdns_lookup_reverse(const void *addr, int af) {
 	struct ub_result *res = NULL;
 	char *qname = NULL;
 	int ret;
@@ -266,13 +266,13 @@ ubdns_lookup_reverse(const void *addr, int af) {
 		return (NULL);
 	}
 
-	ret = ub_resolve(ctx, qname, UBDNS_TYPE_PTR, 1 /*IN*/, &res);
+	ret = ub_resolve(ctx, qname, NSS_UBDNS_TYPE_PTR, 1 /*IN*/, &res);
 
 	if (ret == 0 &&
-	    ubdns_check_result(res) &&
+	    nss_ubdns_check_result(res) &&
 	    res->data[0] != NULL)
 	{
-		char name[UBDNS_PRESLEN_NAME];
+		char name[NSS_UBDNS_PRESLEN_NAME];
 		domain_to_str((const uint8_t *) res->data[0], res->len[0], name);
 		ub_resolve_free(res);
 		return (strdup(name));

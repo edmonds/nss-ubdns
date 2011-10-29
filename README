@@ -17,16 +17,16 @@ path for NSS plugins on your platform.
 CONFIGURATION
 =============
 
-nss-ubdns reads the list of nameservers from the file /etc/ubdns/resolv.conf.
-If this file does not exist, the list of nameservers will instead be read from
-/etc/resolv.conf.
+nss-ubdns reads the list of nameservers from the file
+/etc/nss-ubdns/resolv.conf.  If this file does not exist, the list of
+nameservers will instead be read from /etc/resolv.conf.
 
-The file /etc/ubdns/libunbound.conf, if it exists, will be used to configure
-the libunbound library. See the unbound.conf(5) man page for more details. A
-sample libunbound.conf file that minimizes the resources consumed by the
-resolver is included with nss-ubdns.
+The file /etc/nss-ubdns/libunbound.conf, if it exists, will be used to
+configure the libunbound library. See the unbound.conf(5) man page for more
+details. A sample libunbound.conf file that minimizes the resources consumed
+by the resolver is included with nss-ubdns.
 
-Trust anchors are configured by creating files in the /etc/ubdns/keys
+Trust anchors are configured by creating files in the /etc/nss-ubdns/keys
 directory. Only files ending in ".key" will be processed. If the unbound
 server is in use, any files that are in use as auto-trust-anchor-files can be
 symlinked into this directory.

@@ -48,7 +48,7 @@
 
 #include <stdio.h>
 
-#include "ubdns.h"
+#include "nss-ubdns.h"
 
 #define ALIGN(a) (((a+sizeof(void*)-1)/sizeof(void*))*sizeof(void*))
 
@@ -110,7 +110,7 @@ enum nss_status _nss_ubdns_gethostbyname4_r(
 	unsigned n_addresses = 0, n;
 
 	/* If this fails, n_addresses is 0. Which is fine */
-	ubdns_lookup_forward(hn, AF_UNSPEC, &addresses, &n_addresses);
+	nss_ubdns_lookup_forward(hn, AF_UNSPEC, &addresses, &n_addresses);
 	if (n_addresses == 0) {
 		*errnop = ENOENT;
 		*h_errnop = HOST_NOT_FOUND;
@@ -181,7 +181,7 @@ enum nss_status _nss_ubdns_gethostbyname3_r(
 
 	alen = PROTO_ADDRESS_SIZE(af);
 
-	ubdns_lookup_forward(hn, af, &addresses, &n_addresses);
+	nss_ubdns_lookup_forward(hn, af, &addresses, &n_addresses);
 	for (a = addresses, n = 0, c = 0; n < n_addresses; a++, n++)
 		if (af == a->family)
 			c++;
@@ -323,7 +323,7 @@ enum nss_status _nss_ubdns_gethostbyaddr2_r(
 		return NSS_STATUS_UNAVAIL;
 	}
 
-	hn = ubdns_lookup_reverse(addr, af);
+	hn = nss_ubdns_lookup_reverse(addr, af);
 	if (!hn) {
 		*errnop = ENOENT;
 		*h_errnop = HOST_NOT_FOUND;
