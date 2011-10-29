@@ -1,9 +1,9 @@
-    nss-ubdns - NSS plugin for DNSSEC validated hostname lookups
+    nss-ubdns - NSS module for DNSSEC validated hostname lookups
 
-The nss-ubdns library is a plugin for the glibc NSS (Name Service Switch)
-interface that returns DNSSEC validated lookups to the NSS "hosts" database.
-It is a replacement for the standard libresolv based "dns" plugin that uses
-the libunbound library for caching and validation.
+The nss-ubdns module for the glibc NSS (Name Service Switch) interface returns
+DNSSEC validated lookups to the NSS "hosts" database.  It is a replacement for
+the standard libresolv based "dns" module that uses the libunbound library for
+caching and validation.
 
 INSTALLATION
 ============
